@@ -5,15 +5,6 @@ export type TreeNodeInfo = {
   coverRight: number;
 };
 
-export type UpdateResult = {
-    type: "update";
-    index : number;
-    value : number;
-    path : number[];
-    treeArray : number[];
-    array : number[];
-}
-
 export class FenwickTree{
     private size: number;
     private tree: number[];
@@ -27,7 +18,7 @@ export class FenwickTree{
         return i & -i;
     }
     
-    add(index: number, value: number): void{
+    update(index: number, value: number): void{
         if(index < 1 || index > this.size){
             throw new Error("index out of range");
         }
@@ -37,7 +28,7 @@ export class FenwickTree{
         }
     }
 
-    prefixSum(index: number): number{
+    query(index: number): number{
         if(index < 0 || index > this.size){
             throw new Error("index out of range");
         }
@@ -49,11 +40,11 @@ export class FenwickTree{
         return sum;
     }
 
-    rangeSum(left: number, right: number): number{
+    rangeQuery(left: number, right: number): number{
         if(left > right || left < 1 || right > this.size){
             throw new Error("index out of range");
         }
-        return this.prefixSum(right)-this.prefixSum(left-1);
+        return this.query(right)-this.query(left-1);
     }
 
     getTreeArray(): number[]{
@@ -64,7 +55,7 @@ export class FenwickTree{
         let value: number[] = new Array(this.size + 1).fill(0);
         let index: number = 1;
         while(index <= this.size){
-            value[index] = this.prefixSum(index) - this.prefixSum(index - 1);
+            value[index] = this.query(index) - this.query(index - 1);
             index ++;
         }
         return value;
