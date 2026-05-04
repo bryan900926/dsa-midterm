@@ -1,0 +1,173 @@
+/* FenwickTreeDrawer.css */
+
+/* Sticky Right-Side Trigger Button */
+.sticky-trigger-tab {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  background-color: #1e2333;
+  border: 1px solid #334155;
+  border-right: none;
+  border-radius: 0.5rem 0 0 0.5rem;
+  padding: 0.75rem 0.5rem 0.75rem 0.75rem;
+  color: #cbd5e1;
+  cursor: pointer;
+  z-index: 30; /* Keeps it above your canvas, but below open drawer/overlay */
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s, color 0.2s, padding-right 0.2s;
+  font-family: monospace;
+}
+
+.sticky-trigger-tab:hover {
+  background-color: #334155;
+  color: #ffffff;
+  padding-right: 0.75rem;
+}
+
+/* Drawer Overlay */
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 40;
+}
+
+/* Drawer Panel */
+.drawer-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 20rem;
+  background-color: #1e2333;
+  box-shadow: -10px 0 25px rgba(0, 0, 0, 0.5);
+  border-left: 1px solid #334155;
+  z-index: 50;
+  transition: transform 0.3s ease-in-out;
+  font-family: monospace;
+  color: #e2e8f0;
+}
+
+.drawer-panel.open {
+  transform: translateX(0);
+}
+
+.drawer-panel.closed {
+  transform: translateX(100%);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #334155;
+}
+
+.drawer-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+.close-btn {
+  padding: 0.25rem;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #ffffff;
+}
+
+.drawer-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-size: 0.875rem;
+}
+
+/* Form Controls */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.input-label {
+  display: block;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.sub-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-bottom: 0.25rem;
+}
+
+.text-input {
+  width: 100%;
+  background-color: #111520;
+  border: 1px solid #475569;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  color: #ffffff;
+  box-sizing: border-box;
+  font-family: monospace;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.side-by-side {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: monospace;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-success {
+  background-color: #059669;
+}
+
+.btn-success:hover {
+  background-color: #047857;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #334155;
+  margin: 0;
+}

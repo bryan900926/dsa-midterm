@@ -1,0 +1,54 @@
+/* --- Base Styling --- */
+
+.fenwick-node {
+  transition: transform 0.3s ease-in-out;
+}
+
+.node-circle {
+  fill: #ffffff;
+  stroke: #94a3b8; /* Neutral Slate */
+  stroke-width: 2px;
+  transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.node-value {
+  font-size: 16px;
+  font-weight: 700;
+  fill: #1e293b; 
+  font-family: monospace; /* Monospace is great for algorithms */
+}
+
+.node-index {
+  font-size: 12px;
+  font-weight: 600;
+  fill: #3b82f6; /* Blue to indicate index */
+  font-family: monospace;
+}
+
+.node-range {
+  font-size: 12px;
+  fill: #64748b;
+  font-family: monospace;
+}
+
+/* --- Status States --- */
+
+/* 1. Highlighted (e.g., node is being visited during a query) */
+.fenwick-node.highlighted .node-circle {
+  fill: #fef08a; /* Soft Yellow */
+  stroke: #eab308; /* Deep Yellow */
+  stroke-width: 3px;
+}
+
+/* 2. Updating (e.g., node value is actively being changed) */
+.fenwick-node.updating .node-circle {
+  fill: #bbf7d0; /* Soft Green */
+  stroke: #22c55e; /* Deep Green */
+  stroke-width: 3px;
+  /* Adds a slight "pop" effect when updating */
+  transform: scale(1.15); 
+}
+
+.fenwick-node.updating .node-value {
+  fill: #14532d; /* Dark green text for contrast */
+}
