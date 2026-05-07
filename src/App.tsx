@@ -130,6 +130,10 @@ const App: React.FC = () => {
       toast.error(`Indices must be between 1 and ${arraySize}.`);
       return;
     }
+    if (startIndex > endIndex) {
+      toast.error("Start index cannot be greater than end index.");
+      return;
+    }
     const fenwick = new FenwickTree(arraySize);
     fenwick.build(nums);
     // Reset query visual state
