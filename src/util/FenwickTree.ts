@@ -161,6 +161,8 @@ export class FenwickTree{
     getUpdatePath(index: number): number[]{
         this.checkInteger(index);
         if(index < 1 || index > this.size){
+            console.log(this.size);
+            console.log(index);
             throw new Error("index out of range");
         }
         let path: number[] = [];

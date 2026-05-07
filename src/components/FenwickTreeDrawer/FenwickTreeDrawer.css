@@ -166,6 +166,14 @@
   background-color: #047857;
 }
 
+.btn-info {
+  background-color: #0ea5e9;
+}
+
+.btn-info:hover {
+  background-color: #0284c7;
+}
+
 .divider {
   border: 0;
   border-top: 1px solid #334155;

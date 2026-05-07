@@ -15,9 +15,8 @@ const countBits = (n: number): number => {
   return count;
 };
 
-// 1. Define an interface for our lines
 export interface FenwickEdgeProps {
-  id: string;   // Unique ID for React key (e.g., "parent-child")
+  id: string;
   x1: number;
   y1: number;
   x2: number;
@@ -26,15 +25,21 @@ export interface FenwickEdgeProps {
 
 export const generateTopDownTreeNodes = (
   arraySize: number,
-): { nodes: FenwickNodeProps[], edges: FenwickEdgeProps[], svgWidth: number, svgHeight: number } => {
-  
+): {
+  nodes: FenwickNodeProps[],
+  edges: FenwickEdgeProps[],
+  svgWidth: number,
+  svgHeight: number
+} => {
+
   const adjList = new Map<number, number[]>();
   const levelMinDeltaX = new Map<number, number[]>();
-  for (let i = 0; i <= arraySize; i++) adjList.set(i, []);
+  adjList.set(0, []); // Root node with id 0
 
   for (let i = 1; i <= arraySize; i++) {
     const lsb = i & (-i);
     const parent = i - lsb;
+    adjList.set(i, []);
     adjList.get(parent)?.push(i);
   }
 
@@ -45,12 +50,13 @@ export const generateTopDownTreeNodes = (
     };
   };
 
-  const NODE_WIDTH = 60;
-  const FIXED_PADDING = 20;
-  const X_FOOTPRINT = NODE_WIDTH + FIXED_PADDING;
-  const Y_LEVEL_HEIGHT = 80;
-
   const rootData = buildHierarchy(0);
+
+  const NODE_WIDTH = 80;
+  const FIXED_PADDING = 40;
+  const X_FOOTPRINT = NODE_WIDTH + FIXED_PADDING;
+  const Y_LEVEL_HEIGHT = 100;
+
 
   const d3TreeLayout = tree<TreeNode>()
     .nodeSize([X_FOOTPRINT, Y_LEVEL_HEIGHT])
@@ -67,12 +73,9 @@ export const generateTopDownTreeNodes = (
 
   const padding = 100; // Extra space around the tree
 
-  // 2. Calculate the exact offset needed to push the leftmost node to 'x = padding'
-  // Math.abs(minRawX) turns the most negative x into a positive shift
   const xOffset = Math.abs(minRawX) + padding;
   const yOffset = padding;
 
-  // 3. Apply the dynamic offset to React Nodes
   const reactNodes: FenwickNodeProps[] = descendants.map(d => {
     const i = d.data.id;
     const lsb = i === 0 ? 0 : i & (-i);
@@ -84,13 +87,12 @@ export const generateTopDownTreeNodes = (
       range: [start, i],
       x: d.x + xOffset, // Pushes everything neatly into the positive viewing area
       y: d.y + yOffset,
-      radius: 30,
+      radius: 40,
       index: i,
       isActive: false,
     };
   });
 
-  // 4. Apply the exact same offset to the edges
   const reactEdges: FenwickEdgeProps[] = layout.links().map(link => {
     return {
       id: `${link.source.data.id}-${link.target.data.id}`, 
@@ -101,7 +103,6 @@ export const generateTopDownTreeNodes = (
     };
   });
 
-  // 5. Calculate total SVG required size based on the total spread + padding on both sides
   const requiredSvgWidth = (maxRawX - minRawX) + (padding * 2); 
   const requiredSvgHeight = maxRawY + (padding * 2); 
 
