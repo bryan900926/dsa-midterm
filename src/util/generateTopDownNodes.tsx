@@ -1,5 +1,5 @@
 import type { FenwickNodeProps } from '../components/FenwickNode/FenwickNode.tsx';
-import { hierarchy, tree } from 'd3-hierarchy';
+import { hierarchy} from 'd3-hierarchy';
 
 interface TreeNode {
   id: number;
@@ -58,18 +58,23 @@ export const generateTopDownTreeNodes = (
   const Y_LEVEL_HEIGHT = 100;
 
 
-  const d3TreeLayout = tree<TreeNode>()
-    .nodeSize([X_FOOTPRINT, Y_LEVEL_HEIGHT])
-    .separation(() => 1);
+  const root = hierarchy<TreeNode>(rootData);
 
-  const d3Root = hierarchy(rootData);
-  const layout = d3TreeLayout(d3Root);
-  const descendants = layout.descendants();
 
-  // 1. Calculate raw D3 coordinate boundaries FIRST
-  const minRawX = Math.min(...descendants.map(d => d.x));
-  const maxRawX = Math.max(...descendants.map(d => d.x));
-  const maxRawY = Math.max(...descendants.map(d => d.y));
+  root.each(node => {
+    const nodeId = node.data.id; 
+
+    node.x = nodeId * X_FOOTPRINT;
+
+    node.y = node.depth * Y_LEVEL_HEIGHT;
+  });
+
+  const links = root.links();
+  const descendants = root.descendants();
+
+  const minRawX = Math.min(...descendants.map(d => d.x ?? 0));
+  const maxRawX = Math.max(...descendants.map(d => d.x ?? 0));
+  const maxRawY = Math.max(...descendants.map(d => d.y ?? 0));
 
   const padding = 100; // Extra space around the tree
 
@@ -80,26 +85,26 @@ export const generateTopDownTreeNodes = (
     const i = d.data.id;
     const lsb = i === 0 ? 0 : i & (-i);
     const start = i === 0 ? 0 : i - lsb + 1;
-    levelMinDeltaX.set(countBits(i), [...(levelMinDeltaX.get(countBits(i)) || []), d.x]);
+    levelMinDeltaX.set(countBits(i), [...(levelMinDeltaX.get(countBits(i)) || []), d.x ?? 0]);
     
     return {
       value: 0,
       range: [start, i],
-      x: d.x + xOffset, // Pushes everything neatly into the positive viewing area
-      y: d.y + yOffset,
+      x: (d.x ?? 0) + xOffset,
+      y: (d.y ?? 0) + yOffset,
       radius: 40,
       index: i,
       isActive: false,
     };
   });
 
-  const reactEdges: FenwickEdgeProps[] = layout.links().map(link => {
+  const reactEdges: FenwickEdgeProps[] = links.map(link => {
     return {
       id: `${link.source.data.id}-${link.target.data.id}`, 
-      x1: link.source.x + xOffset,
-      y1: link.source.y + yOffset,
-      x2: link.target.x + xOffset,
-      y2: link.target.y + yOffset
+      x1: (link.source.x ?? 0) + xOffset,
+      y1: (link.source.y ?? 0) + yOffset,
+      x2: (link.target.x ?? 0) + xOffset,
+      y2: (link.target.y ?? 0) + yOffset
     };
   });
 

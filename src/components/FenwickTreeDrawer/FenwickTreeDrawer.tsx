@@ -38,7 +38,6 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
   };
 
   const handleUpdate = () => {
-    console.log(`Updating index ${updateIndex} with delta ${updateDelta}`);
     if (updateEventHandler) {
       const idx = parseInt(updateIndex, 10);
       const delta = parseInt(updateDelta, 10);
