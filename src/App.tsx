@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, number } from 'framer-motion';
+import { motion} from 'framer-motion';
 import FenwickNode, { type FenwickNodeProps } from './components/FenwickNode/FenwickNode';
 import FenwickHeader from './components/FenwickHeader/FenwickHeader';
 import FenwickTreeDrawer from './components/FenwickTreeDrawer/FenwickTreeDrawer';
