@@ -42,7 +42,7 @@ const App: React.FC = () => {
 
     const mul = isForward ? 1 : -1;
     const targetIdx = isForward ? currentStep + 1 : currentStep;
-    if (!isForward && targetIdx < 0) {
+    if (!isForward && targetIdx <= 0) {
       handleSoftReset();
       return;
     } 
@@ -88,8 +88,10 @@ const App: React.FC = () => {
         });
         setActiveIndex(queryPath[targetIdx - 1]?.index ?? null);
       }
-  }
-  setCurrentStep(prev => prev + mul);
+    }
+    setCurrentStep(prev => {
+        return prev + mul
+    });
 };
 
   useEffect(() => {
