@@ -28,8 +28,8 @@ const FenwickHeader: React.FC<FenwickHeaderProps> = ({
   onBackward,
   onRangeQuery
 }) => {
-  const [l, setL] = useState(1);
-  const [r, setR] = useState(5);
+  const [l, setL] = useState("1");
+  const [r, setR] = useState("5");
 
   return (
     <header className="fenwick-header">
@@ -40,17 +40,17 @@ const FenwickHeader: React.FC<FenwickHeaderProps> = ({
           <input
             type="number"
             value={l}
-            onChange={(e) => setL(Number(e.target.value))}
+            onChange={(e) => setL(e.target.value)}
             className="query-input"
           />
           <span className="query-to">to</span>
           <input
             type="number"
             value={r}
-            onChange={(e) => setR(Number(e.target.value))}
+            onChange={(e) => setR(e.target.value)}
             className="query-input"
           />
-          <button className="icon-btn search-btn" onClick={() => onRangeQuery(l, r)}>
+          <button className="icon-btn search-btn" onClick={() => onRangeQuery(parseInt(l, 10), parseInt(r, 10))}>
             <Search size={18} />
           </button>
         </div>

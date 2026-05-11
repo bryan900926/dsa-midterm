@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, number } from 'framer-motion';
 import FenwickNode, { type FenwickNodeProps } from './components/FenwickNode/FenwickNode';
 import FenwickHeader from './components/FenwickHeader/FenwickHeader';
 import FenwickTreeDrawer from './components/FenwickTreeDrawer/FenwickTreeDrawer';
 import { generateTopDownTreeNodes, type FenwickEdgeProps } from './util/generateTopDownNodes';
-import { FenwickTree } from './util/FenwickTree';
+import { FenwickTree, type UpdateStep } from './util/FenwickTree';
 import { toast, Toaster } from 'react-hot-toast';
 
 import './App.css';
@@ -15,10 +15,10 @@ export type QueryStep = { index: number; delta: number };
 const App: React.FC = () => {
 
   // --- Data & UI State ---
-  const [arraySize, setArraySize] = useState(16); 
+  const [arraySize, setArraySize] = useState(16);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [nums, setNums] = useState<number[]>(() => new Array(arraySize).fill(0));
-  const [initialNums, setInitialNums] = useState<number[]>(() => new Array(arraySize + 1).fill(0));
+  const [initialNums, setInitialNums] = useState<number[]>(() => new Array(arraySize).fill(0));
   const [treeArr, setTreeArr] = useState<number[]>(() => new Array(arraySize + 1).fill(0));
   const [treeData, setNodes] = useState<{ nodes: FenwickNodeProps[], edges: FenwickEdgeProps[], svgWidth: number, svgHeight: number }>(() => generateTopDownTreeNodes(arraySize));
 
@@ -28,8 +28,9 @@ const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(-1);
 
   // Update State
-  const [updatePath, setUpdatePath] = useState<number[]>([]);
-  const [deltaValue, setDeltaValue] = useState(0);
+  const [updatePath, setUpdatePath] = useState<UpdateStep[]>([]);
+  const [updateIndx, setUpdateIndex] = useState(-1);
+  const [delta, setDelta] = useState(0);
 
   // Query State
   const [queryPath, setQueryPath] = useState<QueryStep[]>([]);
@@ -40,39 +41,38 @@ const App: React.FC = () => {
     if (mode === AnimationMode.IDLE) return;
 
     const mul = isForward ? 1 : -1;
-
+    const targetIdx = isForward ? currentStep + 1 : currentStep;
+    if (!isForward && targetIdx < 0) {
+      handleSoftReset();
+      return;
+    } 
     if (mode === AnimationMode.UPDATE) {
-      const targetIdx = isForward ? currentStep + 1 : currentStep;
-
       if (isForward && targetIdx >= updatePath.length) {
         handleSoftReset();
         return;
       }
-      if (!isForward && targetIdx < 0) return;
-
-      const treeIdx = updatePath[targetIdx];
-      setActiveIndex(treeIdx);
+      const treeIdx = updatePath[targetIdx].updatedIndex;
       setTreeArr(prev => {
         const newArr = [...prev];
-        newArr[treeIdx] += mul * deltaValue;
+        newArr[treeIdx] = isForward ? updatePath[targetIdx].newValue : updatePath[targetIdx].oldValue;
         return newArr;
       });
-
-      setCurrentStep(prev => prev + mul);
+      setActiveIndex(isForward ? treeIdx : updatePath[targetIdx - 1]?.updatedIndex ?? null);
+      if (targetIdx == 0 && !isForward) {
+        setNums((prev) => {
+          const arr = [...prev];
+          arr[updateIndx - 1] -= delta;
+          return arr;
+        })
+      }
     } 
     else if (mode === AnimationMode.QUERY) {
-
-      const targetIdx = isForward ? currentStep : currentStep - 1;
-
       if (isForward && targetIdx >= queryPath.length) {
         handleSoftReset();
         return;
       }
-      if (!isForward && targetIdx < 0) return;
-
       const step = queryPath[targetIdx];
       setQueryResult(prev => prev + (mul * step.delta));
-
       if (isForward) {
         setIndiceState(prev => {
           const next = [...prev];
@@ -88,9 +88,8 @@ const App: React.FC = () => {
         });
         setActiveIndex(queryPath[targetIdx - 1]?.index ?? null);
       }
-
-    setCurrentStep(prev => prev + mul);
   }
+  setCurrentStep(prev => prev + mul);
 };
 
   useEffect(() => {
@@ -107,25 +106,36 @@ const App: React.FC = () => {
 
 
   const handleFlowingUpdate = (startIndex: number, amountToAdd: number) => {
+    if (queryPath.length > 0) {
+      toast.error("query animation is going on...");
+      return;
+    }
     if (amountToAdd === 0) {
       toast.error("Delta value cannot be zero.");
       return;
     }
+    if (startIndex < 1 || startIndex > arraySize) {
+      toast.error("invalid update index");
+      return;
+    }
     const fenwick = new FenwickTree(arraySize);
+    console.log(nums);
     fenwick.build(nums);
-    // Update the raw array immediately
+    setDelta(amountToAdd);
+    setUpdatePath(fenwick.getUpdateTrace(startIndex, amountToAdd));
     fenwick.update(startIndex, amountToAdd);
+    setUpdateIndex(startIndex);
     setNums(fenwick.getArray());
-
-    // Queue Animation
-    setUpdatePath(fenwick.getUpdateTrace(startIndex, amountToAdd).map(s => s.updatedIndex));
-    setDeltaValue(amountToAdd);
     setMode(AnimationMode.UPDATE);
     setCurrentStep(-1);
     setIsPlaying(true);
   };
 
   const handleFlowingRangeQuery = (startIndex: number, endIndex: number) => {
+    if (updatePath.length > 0) {
+      toast.error("update animation is going on...");
+      return;
+    }
     if (startIndex < 1 || endIndex < 1 || startIndex > arraySize || endIndex > arraySize) {
       toast.error(`Indices must be between 1 and ${arraySize}.`);
       return;
@@ -145,29 +155,30 @@ const App: React.FC = () => {
 
     // Queue Animation
     setQueryPath([...pathR, ...pathL]);
-    console.log("Query Path:", [...pathR, ...pathL]);
     setMode(AnimationMode.QUERY);
-    setCurrentStep(0);
+    setCurrentStep(-1);
     setIsPlaying(true);
   };
   // remove all animation state but keep the current tree/array data (for quick consecutive operations)
   const handleSoftReset = () => {
     setIsPlaying(false);
     setMode(AnimationMode.IDLE);
+    setUpdatePath([]);
+    setQueryPath([]);
+    setIsPlaying(false);
     setActiveIndex(null);
     setIndiceState(new Array(arraySize + 1).fill(0));
   }
   // Reset all data back to old arr
   const handleHardReset = () => {
-    setIsPlaying(false);
-    setMode(AnimationMode.IDLE);
-    setActiveIndex(null);
-    setIndiceState(new Array(arraySize + 1).fill(0));
+    handleSoftReset();
     setCurrentStep(-1);
     const fenwick = new FenwickTree(arraySize);
     fenwick.build(initialNums);
     setTreeArr(fenwick.getTreeArray());
     setNums(initialNums);
+    setIsPlaying(false);
+    setQueryResult(0);
   };
 
   return (
@@ -189,23 +200,31 @@ const App: React.FC = () => {
         }} 
       />
       <FenwickTreeDrawer 
-        buildEventHandler={(array) => {
-          const newTreeData = generateTopDownTreeNodes(array.length);
+        buildEventHandler={(newArray) => {
+          const newSize = newArray.length;
+          const newTreeData = generateTopDownTreeNodes(newSize);
+          const fenwick = new FenwickTree(newSize);
+          
+          fenwick.build(newArray);
+          const newTreeArr = fenwick.getTreeArray();
+
           setNodes(newTreeData);
-          const fenwick = new FenwickTree(array.length);
-          fenwick.build(array);
-          setTreeArr(fenwick.getTreeArray());
-          setArraySize(array.length);
-          setNums(array);
-          setInitialNums(array);
-          handleHardReset();
+          setArraySize(newSize);
+          setTreeArr(newTreeArr);
+          setNums(newArray);
+          setInitialNums(newArray);
+          handleSoftReset();
+          setCurrentStep(-1);
         }}
         updateEventHandler={(index, delta) => handleFlowingUpdate(index, delta)}
         queryEventHandler={(start, end) => handleFlowingRangeQuery(start, end)}
       />
-      <FenwickHeader 
-        isPlaying={isPlaying} 
-        onTogglePlay={() => setIsPlaying(!isPlaying)}
+      <FenwickHeader
+        isPlaying={isPlaying}
+        onTogglePlay={() => {
+          if (updatePath.length == 0 && queryPath.length == 0) return;
+          setIsPlaying(!isPlaying);
+        }}
         onReset={handleHardReset}
         onForward={() => {
             setIsPlaying(false); // Stop auto-play when manual jumping
@@ -218,19 +237,15 @@ const App: React.FC = () => {
         onRangeQuery={(l, r) => handleFlowingRangeQuery(l, r)}
       />
       <div className="scoreboard-container">
-        {mode === AnimationMode.QUERY ? (
+        { mode === AnimationMode.UPDATE ? (
+          <div className="query-scoreboard update-mode">
+            <div className="score-label">Updating by:</div>
+            <div className="score-value">+{delta}</div>
+          </div>
+        ) : (
           <div className="query-scoreboard">
             <div className="score-label">Running Sum:</div>
             <div className="score-value">{queryResult}</div>
-          </div>
-        ) : mode === AnimationMode.UPDATE ? (
-          <div className="query-scoreboard update-mode">
-            <div className="score-label">Updating by:</div>
-            <div className="score-value">+{deltaValue}</div>
-          </div>
-        ) : (
-          <div className="query-scoreboard idle-mode">
-            Waiting for input...
           </div>
         )}
       </div>
