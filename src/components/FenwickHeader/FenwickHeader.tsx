@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import "./FenwickHeader.css";
+import toast from "react-hot-toast";
 
 // Define the expected props
 interface FenwickHeaderProps {
@@ -41,6 +42,11 @@ const FenwickHeader: React.FC<FenwickHeaderProps> = ({
             type="number"
             value={l}
             onChange={(e) => setL(e.target.value)}
+            onKeyDown={(e) => {
+              if (["e", "E", "+", "-"].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
             className="query-input"
           />
           <span className="query-to">to</span>
@@ -48,9 +54,23 @@ const FenwickHeader: React.FC<FenwickHeaderProps> = ({
             type="number"
             value={r}
             onChange={(e) => setR(e.target.value)}
+            onKeyDown={(e) => {
+              if (["e", "E", "+", "-"].includes(e.key)) {
+                e.preventDefault();
+              }
+            }}
             className="query-input"
           />
-          <button className="icon-btn search-btn" onClick={() => onRangeQuery(parseInt(l, 10), parseInt(r, 10))}>
+          <button className="icon-btn search-btn" onClick={() => {
+            const parsedL = parseInt(l, 10);
+            const parsedR = parseInt(r, 10);
+            if (Number.isNaN(parsedL) || Number.isNaN(parsedR)) {
+              toast.error("invalid range query input");
+              return;
+            }
+            onRangeQuery(parsedL, parsedR);
+          }
+          }>
             <Search size={18} />
           </button>
         </div>

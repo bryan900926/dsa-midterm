@@ -121,7 +121,6 @@ const App: React.FC = () => {
       return;
     }
     const fenwick = new FenwickTree(arraySize);
-    console.log(nums);
     fenwick.build(nums);
     setDelta(amountToAdd);
     setUpdatePath(fenwick.getUpdateTrace(startIndex, amountToAdd));

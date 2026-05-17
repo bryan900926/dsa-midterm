@@ -23,7 +23,7 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
 
   const handleBuild = () => {
     if (buildEventHandler) {
-      const parsedArray = arrayInput.split(',').map(n => parseInt(n.trim(), 10));
+      const parsedArray = arrayInput.split(',').map(n => parseFloat(n.trim()));
       if (parsedArray.some(isNaN)) {
         toast.error("Please enter a valid comma-separated list of numbers.");
         return;
@@ -40,7 +40,7 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
   const handleUpdate = () => {
     if (updateEventHandler) {
       const idx = parseInt(updateIndex, 10);
-      const delta = parseInt(updateDelta, 10);
+      const delta = parseFloat(updateDelta);
       updateEventHandler(idx, delta);
     }
     setIsDrawerOpen(false);
@@ -118,6 +118,11 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
                   type="number"
                   value={updateIndex}
                   onChange={(e) => setUpdateIndex(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (["e", "E", "+", "-"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   className="text-input"
                   placeholder="idx"
                 />
@@ -128,6 +133,11 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
                   type="number"
                   value={updateDelta}
                   onChange={(e) => setUpdateDelta(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (["e", "E", "+", "-"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   className="text-input"
                   placeholder="+/- val"
                 />
@@ -148,6 +158,11 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
                   type="number"
                   value={rangeStart}
                   onChange={(e) => setRangeStart(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (["e", "E", "+", "-"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   className="text-input"
                   placeholder="start"
                 />
@@ -158,6 +173,11 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
                   type="number"
                   value={rangeEnd}
                   onChange={(e) => setRangeEnd(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (["e", "E", "+", "-"].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                   className="text-input"
                   placeholder="end"
                 />

@@ -1,3 +1,5 @@
+import { number } from "framer-motion";
+
 export type TreeNodeInfo = {
   index: number;
   value: number;
@@ -40,7 +42,7 @@ export class FenwickTree{
 
     private checkInteger(...values: number[]): void {
         for (const val of values) {
-            if (!Number.isInteger(val)) {
+            if (!Number.isFinite(val)) {
                 throw new Error("Non-integer input is not allowed");
             }
         }
@@ -65,10 +67,8 @@ export class FenwickTree{
         if(index < 1 || index > this.size){
             throw new Error("index out of range");
         }
-
         this.arr[index] += delta;
         let i=index;
-        
         while(i <= this.size){
             this.tree[i] += delta;
             i += this.lowbit(i);

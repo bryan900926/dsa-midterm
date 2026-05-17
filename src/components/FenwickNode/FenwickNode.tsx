@@ -24,9 +24,12 @@ const FenwickNode: React.FC<FenwickNodeProps> = ({
 }) => {
   
   const currentFill = highlightColor !== "transparent" ? highlightColor : '#1e293b';
-  
-  
   const textColor = highlightColor === "#eab308" ? '#1e293b' : '#f8fafc';
+
+  const stringValue = String(value);
+  const displayValue = stringValue.length > 4 
+    ? stringValue.slice(0, 4) + ".." 
+    : stringValue;
 
   return (
     <motion.g 
@@ -36,6 +39,7 @@ const FenwickNode: React.FC<FenwickNodeProps> = ({
       }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
+      <title>{value}</title> 
       <motion.circle 
         r={radius} 
         animate={{
@@ -55,7 +59,7 @@ const FenwickNode: React.FC<FenwickNodeProps> = ({
         fontFamily="monospace"
         fontWeight="bold"
       >
-        {value}
+        {displayValue}
       </motion.text>
 
       <text y={40} textAnchor="middle" fill="#64748b" fontSize="12" fontFamily="monospace">
