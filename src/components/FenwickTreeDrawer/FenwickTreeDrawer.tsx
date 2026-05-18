@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Settings, X } from "lucide-react";
 import { toast } from 'react-hot-toast';
 import "./FenwickTreeDrawer.css";
-import { number } from "framer-motion";
 
 export interface FenwickTreeDrawerProps {
   buildEventHandler?: (array: number[]) => void;
