@@ -43,7 +43,7 @@ const FenwickHeader: React.FC<FenwickHeaderProps> = ({
             value={l}
             onChange={(e) => setL(e.target.value)}
             onKeyDown={(e) => {
-              if (["e", "E", "+", "-"].includes(e.key)) {
+              if (["e", "E", "+", "-", "."].includes(e.key)) {
                 e.preventDefault();
               }
             }}
@@ -55,7 +55,7 @@ const FenwickHeader: React.FC<FenwickHeaderProps> = ({
             value={r}
             onChange={(e) => setR(e.target.value)}
             onKeyDown={(e) => {
-              if (["e", "E", "+", "-"].includes(e.key)) {
+              if (["e", "E", "+", "-", "."].includes(e.key)) {
                 e.preventDefault();
               }
             }}

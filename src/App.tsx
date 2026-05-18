@@ -220,23 +220,58 @@ const App: React.FC = () => {
         updateEventHandler={(index, delta) => handleFlowingUpdate(index, delta)}
         queryEventHandler={(start, end) => handleFlowingRangeQuery(start, end)}
       />
-      <FenwickHeader
-        isPlaying={isPlaying}
-        onTogglePlay={() => {
-          if (updatePath.length == 0 && queryPath.length == 0) return;
-          setIsPlaying(!isPlaying);
+    <header
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100%",
+        padding: "12px 24px",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Left */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",                 
+          alignItems: "center",
+          justifyContent: "flex-start",    
+          fontSize: "2rem",
+          fontWeight: 800,
+          color: "white",
+          fontFamily:
+            "'Inter', 'SF Pro Display', 'Segoe UI', sans-serif",
+          letterSpacing: "-0.03em",
         }}
-        onReset={handleHardReset}
-        onForward={() => {
-            setIsPlaying(false); // Stop auto-play when manual jumping
+      >
+        Fenwick Tree
+      </div>
+
+      {/* Center */}
+      <div style={{ flexShrink: 0 }}>
+        <FenwickHeader
+          isPlaying={isPlaying}
+          onTogglePlay={() => {
+            if (updatePath.length == 0 && queryPath.length == 0) return;
+            setIsPlaying(!isPlaying);
+          }}
+          onReset={handleHardReset}
+          onForward={() => {
+            setIsPlaying(false);
             handleStep(true);
           }}
-        onBackward={() => {
-          setIsPlaying(false); 
-          handleStep(false);
-        }}
-        onRangeQuery={(l, r) => handleFlowingRangeQuery(l, r)}
-      />
+          onBackward={() => {
+            setIsPlaying(false);
+            handleStep(false);
+          }}
+          onRangeQuery={(l, r) => handleFlowingRangeQuery(l, r)}
+        />
+      </div>
+
+      {/* Right spacer */}
+      <div style={{ flex: 1 }} />
+    </header>
       <div className="scoreboard-container">
         { mode === AnimationMode.UPDATE ? (
           <div className="query-scoreboard update-mode">

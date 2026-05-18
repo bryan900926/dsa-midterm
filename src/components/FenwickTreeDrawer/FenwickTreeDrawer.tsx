@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Settings, X } from "lucide-react";
 import { toast } from 'react-hot-toast';
 import "./FenwickTreeDrawer.css";
+import { number } from "framer-motion";
 
 export interface FenwickTreeDrawerProps {
   buildEventHandler?: (array: number[]) => void;
@@ -41,6 +42,9 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
     if (updateEventHandler) {
       const idx = parseInt(updateIndex, 10);
       const delta = parseFloat(updateDelta);
+      if (isNaN(delta)) {
+        toast.error("Invalid Delta");
+      }
       updateEventHandler(idx, delta);
     }
     setIsDrawerOpen(false);
@@ -119,7 +123,7 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
                   value={updateIndex}
                   onChange={(e) => setUpdateIndex(e.target.value)}
                   onKeyDown={(e) => {
-                    if (["e", "E", "+", "-"].includes(e.key)) {
+                    if (["e", "E", "+", "-", "."].includes(e.key)) {
                       e.preventDefault();
                     }
                   }}
@@ -134,7 +138,7 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
                   value={updateDelta}
                   onChange={(e) => setUpdateDelta(e.target.value)}
                   onKeyDown={(e) => {
-                    if (["e", "E", "+", "-"].includes(e.key)) {
+                    if (["e", "E", "+"].includes(e.key)) {
                       e.preventDefault();
                     }
                   }}
@@ -159,7 +163,7 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
                   value={rangeStart}
                   onChange={(e) => setRangeStart(e.target.value)}
                   onKeyDown={(e) => {
-                    if (["e", "E", "+", "-"].includes(e.key)) {
+                    if (["e", "E", "+", "-", "."].includes(e.key)) {
                       e.preventDefault();
                     }
                   }}
@@ -174,7 +178,7 @@ const FenwickTreeDrawer: React.FC<FenwickTreeDrawerProps> = ({ buildEventHandler
                   value={rangeEnd}
                   onChange={(e) => setRangeEnd(e.target.value)}
                   onKeyDown={(e) => {
-                    if (["e", "E", "+", "-"].includes(e.key)) {
+                    if (["e", "E", "+", "-", "."].includes(e.key)) {
                       e.preventDefault();
                     }
                   }}
